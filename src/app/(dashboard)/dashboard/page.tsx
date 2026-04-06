@@ -93,7 +93,7 @@ export default function DashboardPage() {
   const [to, setTo] = useState(() => getPresetDates("30d").to);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const overdueRef = useRef<HTMLDivElement>(null);
 
   const fetchStats = useCallback(() => {

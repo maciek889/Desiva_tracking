@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await requireAuth(["Admin", "Office"]);
     const { id } = await params;
     const body = await req.json();
-    const { name, price, client, colorId, stageId, categoryId, status, uwagi, notatki } = body;
+    const { name, price, client, colorId, stageId, categoryId, status, uwagi, notatki, dueDate } = body;
 
     const data: Prisma.OrderUpdateInput = {};
     if (name !== undefined) data.name = name;
@@ -42,6 +42,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (status !== undefined) data.status = status;
     if (uwagi !== undefined) data.uwagi = uwagi;
     if (notatki !== undefined) data.notatki = notatki;
+    if (dueDate !== undefined) data.dueDate = dueDate ? new Date(dueDate) : null;
 
     const order = await prisma.order.update({
       where: { id },

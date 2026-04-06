@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   try {
     await requireAuth(["Admin", "Office"]);
     const body = await req.json();
-    const { name, price, client, colorId, stageId, categoryId, uwagi, notatki } = body;
+    const { name, price, client, colorId, stageId, categoryId, uwagi, notatki, dueDate } = body;
 
     if (!name || price == null || !client || !colorId || !stageId || !categoryId) {
       return errorResponse("Wszystkie pola są wymagane");
@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
         categoryId,
         uwagi: uwagi || "",
         notatki: notatki || "",
+        dueDate: dueDate ? new Date(dueDate) : null,
       },
       include: { stage: true, color: true, category: true, files: true },
     });

@@ -22,6 +22,7 @@ export default function OrderDetailModal({ order, stages, categories, colors, on
     name: order.name, price: order.price, client: order.client,
     colorId: order.colorId, stageId: order.stageId, categoryId: order.categoryId,
     uwagi: order.uwagi || "", notatki: order.notatki || "",
+    dueDate: order.dueDate ? new Date(order.dueDate).toISOString().split("T")[0] : "",
   });
   const [detail, setDetail] = useState<any>(null);
 
@@ -67,6 +68,9 @@ export default function OrderDetailModal({ order, stages, categories, colors, on
               {colors.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </Field>
+          <Field label="Termin realizacji">
+            <input type="date" value={form.dueDate} onChange={e => setForm({ ...form, dueDate: e.target.value })} />
+          </Field>
           <Field label="Uwagi">
             <textarea value={form.uwagi} onChange={e => setForm({ ...form, uwagi: e.target.value })} placeholder="Uwagi do zamówienia" rows={2} maxLength={300} />
           </Field>
@@ -90,6 +94,7 @@ export default function OrderDetailModal({ order, stages, categories, colors, on
             <div className="flex justify-between text-sm"><span style={{ color: "var(--text-muted)" }}>Etap</span><Badge>{stageName(order.stageId)}</Badge></div>
             <div className="flex justify-between text-sm"><span style={{ color: "var(--text-muted)" }}>Kolor</span><span className="text-xs">{colorName(order.colorId)}</span></div>
             <div className="flex justify-between text-sm"><span style={{ color: "var(--text-muted)" }}>Data</span><span>{fmtDate(order.createdAt)}</span></div>
+            {order.dueDate && <div className="flex justify-between text-sm"><span style={{ color: "var(--text-muted)" }}>Termin</span><span>{fmtDate(order.dueDate)}</span></div>}
             {order.uwagi && <div className="text-sm"><span style={{ color: "var(--text-muted)" }}>Uwagi</span><div className="mt-1 text-xs whitespace-pre-wrap break-words">{order.uwagi}</div></div>}
             {canViewField("notatki", userRole) && order.notatki && <div className="text-sm"><span style={{ color: "var(--text-muted)" }}>Notatki</span><div className="mt-1 text-xs whitespace-pre-wrap break-words">{order.notatki}</div></div>}
           </div>

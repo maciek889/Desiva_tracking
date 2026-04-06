@@ -59,6 +59,7 @@ model Order {
   categoryId       String
   category         Category    @relation(fields: [categoryId], references: [id])
   uwagi            String      @default("")
+  dueDate          DateTime?
   notatki          String      @default("")
   files            OrderFile[]
   timeEntries      TimeEntry[]

@@ -88,12 +88,12 @@ async function main() {
 
   // --- Demo Orders ---
   const ordersData = [
-    { id: "000000000001", name: "Regał łazienkowy", price: 2500, client: "Jan Kowalski", colorId: "col0", stageId: "s1", categoryId: "c1" },
-    { id: "000000000002", name: "Stolik kawowy", price: 1800, client: "Anna Nowak", colorId: "col3", stageId: "s3", categoryId: "c2" },
-    { id: "000000000003", name: "Półka kuchenna", price: 950, client: "Piotr Wiśniewski", colorId: "col4", stageId: "s6", categoryId: "c3" },
-    { id: "000000000004", name: "Szafka łazienkowa", price: 3200, client: "Maria Zielińska", colorId: "col10", stageId: "s7", categoryId: "c1" },
+    { id: "000000000001", name: "Regał łazienkowy", price: 2500, client: "Jan Kowalski", colorId: "col0", stageId: "s1", categoryId: "c1", dueDate: new Date("2026-04-20") },
+    { id: "000000000002", name: "Stolik kawowy", price: 1800, client: "Anna Nowak", colorId: "col3", stageId: "s3", categoryId: "c2", dueDate: new Date("2026-04-10") },
+    { id: "000000000003", name: "Półka kuchenna", price: 950, client: "Piotr Wiśniewski", colorId: "col4", stageId: "s6", categoryId: "c3", dueDate: new Date("2026-03-25") },
+    { id: "000000000004", name: "Szafka łazienkowa", price: 3200, client: "Maria Zielińska", colorId: "col10", stageId: "s7", categoryId: "c1", dueDate: new Date("2026-04-01") },
     { id: "000000000005", name: "Lustro z ramą", price: 1400, client: "Tomasz Dąbrowski", colorId: "col5", stageId: "s9", categoryId: "c2" },
-    { id: "000000000006", name: "Wieszak ścienny", price: 600, client: "Ewa Kamińska", colorId: "col8", stageId: "s4", categoryId: "c2" },
+    { id: "000000000006", name: "Wieszak ścienny", price: 600, client: "Ewa Kamińska", colorId: "col8", stageId: "s4", categoryId: "c2", dueDate: new Date("2026-05-01") },
   ];
   for (const o of ordersData) {
     await prisma.order.upsert({ where: { id: o.id }, update: o, create: o });

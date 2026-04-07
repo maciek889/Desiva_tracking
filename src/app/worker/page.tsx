@@ -85,7 +85,12 @@ export default function WorkerPage() {
 
   return (
     <div className="p-6">
-      <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${factoryStages.length}, minmax(200px, 1fr))` }}>
+      <style>{`
+        @media (min-width: 768px) and (orientation: landscape) {
+          .worker-kanban { grid-template-columns: repeat(${factoryStages.length}, minmax(200px, 1fr)) !important; }
+        }
+      `}</style>
+      <div className="worker-kanban grid gap-4 grid-cols-1">
         {factoryStages.map((stage: any) => {
           const stageOrders = activeOrders.filter((o: any) => o.stageId === stage.id);
           return (

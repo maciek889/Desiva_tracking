@@ -62,9 +62,6 @@ export default function LoginPage() {
             {loading ? "Logowanie..." : "Zaloguj się"}
           </button>
         </form>
-        <p className="text-center text-xs mt-4" style={{ color: "var(--text-muted)" }}>
-          Demo: Admin / Desiva2025! · Marta / MAZA
-        </p>
       </div>
     </div>
   );

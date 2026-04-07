@@ -17,9 +17,9 @@ export async function GET(req: NextRequest) {
     const where: Prisma.OrderWhereInput = { status };
     if (search) {
       where.OR = [
-        { name: { contains: search } },
-        { client: { contains: search } },
-        { id: { contains: search } },
+        { name: { contains: search, mode: 'insensitive' as const } },
+        { client: { contains: search, mode: 'insensitive' as const } },
+        { id: { contains: search, mode: 'insensitive' as const } },
       ];
     }
 

@@ -105,3 +105,160 @@ npm run setup        # migrate + seed (pierwszy raz)
 │   └── lib/             # Prisma, auth, utils
 └── public/uploads/      # Pliki załączone do zamówień
 ```
+
+---
+
+## Wdrożenie na VPS (Production)
+
+### Wymagania
+
+- Node.js 18+ 
+- PostgreSQL 14+
+- Nginx
+- Certbot (SSL)
+
+### 1. Przygotowanie serwera
+
+```bash
+# Zainstaluj Node.js 18+
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Zainstaluj PostgreSQL
+sudo apt-get install -y postgresql postgresql-contrib
+
+# Zainstaluj Nginx
+sudo apt-get install -y nginx
+```
+
+### 2. Baza danych
+
+```bash
+sudo -u postgres createuser desiva -P
+sudo -u postgres createdb desiva -O desiva
+```
+
+### 3. Aplikacja
+
+```bash
+# Sklonuj repozytorium
+git clone <repo-url> /var/www/desiva/app
+cd /var/www/desiva/app/order-tracker
+
+# Skopiuj i uzupełnij zmienne środowiskowe
+cp .env.example .env
+# Edytuj .env:
+#   DATABASE_URL="postgresql://desiva:<hasło>@localhost:5432/desiva?schema=public"
+#   JWT_SECRET="<wygeneruj: openssl rand -base64 48>"
+#   UPLOAD_DIR="/var/www/desiva/uploads"
+#   NODE_ENV="production"
+
+# Zainstaluj zależności
+npm ci
+
+# Uruchom migracje
+npx prisma migrate deploy
+
+# Utwórz konto administratora
+ADMIN_PASSWORD="<silne-hasło>" npx tsx prisma/seed-prod.ts
+
+# Zbuduj aplikację
+npm run build
+
+# Przygotuj standalone
+cp -r public .next/standalone/
+cp -r .next/static .next/standalone/.next/
+
+# Utwórz katalog uploadów
+mkdir -p /var/www/desiva/uploads
+```
+
+### 4. Konfiguracja Nginx
+
+Utwórz `/etc/nginx/sites-available/desiva`:
+
+```nginx
+server {
+    listen 80;
+    server_name twoja-domena.pl;
+
+    # Pliki uploadowane — serwowane bezpośrednio przez Nginx
+    location /uploads/ {
+        alias /var/www/desiva/uploads/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Pliki statyczne Next.js
+    location /_next/static/ {
+        alias /var/www/desiva/app/order-tracker/.next/static/;
+        expires 365d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Proxy do Next.js
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 20M;
+    }
+}
+```
+
+```bash
+sudo ln -s /etc/nginx/sites-available/desiva /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### 5. Usługa systemd
+
+Utwórz `/etc/systemd/system/desiva.service`:
+
+```ini
+[Unit]
+Description=Desiva Order Tracker
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/desiva/app/order-tracker
+ExecStart=/usr/bin/node .next/standalone/server.js
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+Environment=PORT=3000
+EnvironmentFile=/var/www/desiva/app/order-tracker/.env
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl enable desiva
+sudo systemctl start desiva
+```
+
+### 6. SSL (HTTPS)
+
+```bash
+sudo apt-get install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d twoja-domena.pl
+```
+
+### 7. Aktualizacja aplikacji
+
+```bash
+cd /var/www/desiva/app/order-tracker
+git pull origin main
+npm ci
+npx prisma migrate deploy
+npm run build
+cp -r public .next/standalone/
+cp -r .next/static .next/standalone/.next/
+sudo systemctl restart desiva
+```

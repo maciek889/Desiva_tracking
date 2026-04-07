@@ -9,6 +9,7 @@
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev --name init",
     "db:seed": "tsx prisma/seed.ts",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:reset": "prisma migrate reset --force",
     "setup": "npm run db:migrate && npm run db:seed"
   },

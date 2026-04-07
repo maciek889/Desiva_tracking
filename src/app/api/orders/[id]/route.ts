@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
-import { jsonResponse, errorResponse } from "@/lib/utils";
+import { jsonResponse, errorResponse, getUploadDir } from "@/lib/utils";
 import path from "path";
 import { rm } from "fs/promises";
 
@@ -60,7 +60,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   try {
     await requireAuth(["Admin"]);
     const { id } = await params;
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", id);
+    const uploadsDir = path.join(getUploadDir(), id);
     await rm(uploadsDir, { recursive: true, force: true });
     await prisma.order.delete({ where: { id } });
     return jsonResponse({ ok: true });

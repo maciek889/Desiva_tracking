@@ -25,9 +25,9 @@ export async function GET(req: NextRequest) {
     const searchFilter = search
       ? {
           OR: [
-            { name: { contains: search } },
-            { client: { contains: search } },
-            { id: { contains: search } },
+            { name: { contains: search, mode: 'insensitive' as const } },
+            { client: { contains: search, mode: 'insensitive' as const } },
+            { id: { contains: search, mode: 'insensitive' as const } },
           ],
         }
       : {};

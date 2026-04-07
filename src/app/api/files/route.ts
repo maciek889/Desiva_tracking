@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
-import { jsonResponse, errorResponse } from "@/lib/utils";
+import { jsonResponse, errorResponse, getUploadDir } from "@/lib/utils";
 import { writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     if (existingFiles >= 5) return errorResponse("Maksymalnie 5 plików na zamówienie");
 
     // Save file
-    const uploadDir = path.join(process.cwd(), "public", "uploads", orderId);
+    const uploadDir = path.join(getUploadDir(), orderId);
     await mkdir(uploadDir, { recursive: true });
 
     const ext = path.extname(file.name);
@@ -56,7 +56,7 @@ export async function DELETE(req: NextRequest) {
     if (!file) return errorResponse("Plik nie znaleziony", 404);
 
     // Delete physical file from disk
-    const physicalPath = path.join(process.cwd(), "public", file.filepath);
+    const physicalPath = path.join(getUploadDir(), file.filepath.replace("/uploads/", ""));
     try {
       await unlink(physicalPath);
     } catch {

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -69,6 +69,14 @@ model Order {
   totalCost        Float?
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([dueDate])
+  @@index([stageId])
+  @@index([categoryId])
+  @@index([colorId])
+  @@index([status, createdAt])
 }
 
 model OrderFile {
@@ -80,6 +88,8 @@ model OrderFile {
   orderId   String
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+
+  @@index([orderId])
 }
 
 model TimeEntry {
@@ -96,4 +106,10 @@ model TimeEntry {
   cost      Float     @default(0)
   isActive  Boolean   @default(false)
   createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([stageId])
+  @@index([isActive])
+  @@index([userId, orderId, isActive])
 }

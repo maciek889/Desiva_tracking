@@ -70,6 +70,7 @@ const RESTRICTED_FIELDS: Record<string, string[]> = {
   client: ["Admin", "Office"],
   price: ["Admin", "Office"],
   notatki: ["Admin", "Office"],
+  laborCost: ["Admin"],
 };
 
 export function canViewField(field: string, role?: string): boolean {

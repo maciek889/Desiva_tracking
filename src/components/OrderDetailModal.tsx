@@ -140,14 +140,14 @@ export default function OrderDetailModal({ order, stages, categories, colors, on
                     </div>
                     <div className="flex items-center gap-3">
                       <span>{fmtTime(te.duration)}</span>
-                      <span style={{ color: "var(--accent)" }}>{fmtPLN(te.cost)}</span>
+                      {canViewField("laborCost", userRole) && <span style={{ color: "var(--accent)" }}>{fmtPLN(te.cost)}</span>}
                     </div>
                   </div>
                 ))}
               </div>
               <div className="flex justify-between mt-3 pt-3 text-sm font-semibold" style={{ borderTop: "1px solid var(--border)" }}>
                 <span>Razem: {fmtTime(totalTime)}</span>
-                <span style={{ color: "var(--accent)" }}>{fmtPLN(totalCost)}</span>
+                {canViewField("laborCost", userRole) && <span style={{ color: "var(--accent)" }}>{fmtPLN(totalCost)}</span>}
               </div>
             </div>
           )}
